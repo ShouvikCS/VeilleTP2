@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Button } from 'react-native';
 import { Audio } from 'expo-av';
+import RecordingsDB from '../services/db';
 
 const AudioRecorder = () => {
-  const [recording, setRecording] = useState(false);
+  const [recordingStatus, setRecordingStatus] = useState(false);
   const [recordingObject, setRecordingObject] = useState(null);
 
   const startJingle = new Audio.Sound();
@@ -35,37 +36,43 @@ const AudioRecorder = () => {
     setupRecorder();
   }, []);
 
-  const toggleRecording = async () => {
-    if (recording) {
-      try {
-        await recordingObject.stopAndUnloadAsync();
-        setRecording(false);
-        if (startJingle._loaded) {
-          await stopJingle.replayAsync();
-        }
-      } catch (error) {
-        console.error('Failed to stop recording:', error);
+  const startRecording = async () => {
+    try {
+      if (!startJingle._loaded) {
+        await loadJingles();
       }
-    } else {
-      try {
-        if (!startJingle._loaded) {
-          await loadJingles();
-        }
-        await startJingle.replayAsync();
-        await recordingObject.startAsync();
-        setRecording(true);
-      } catch (error) {
-        console.error('Failed to start recording:', error);
-        setRecording(false);
+      await startJingle.replayAsync();
+      await recordingObject.startAsync();
+      setRecordingStatus(true);
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+      setRecordingStatus(false);
+    }
+  }
+
+  const stopRecording = async () => {
+    try {
+      await recordingObject.stopAndUnloadAsync();
+      const uri = recordingObject.getURI();
+
+      setRecordingStatus(false);
+      if (startJingle._loaded) {
+        await stopJingle.replayAsync();
       }
+    } catch (error) {
+      console.error('Failed to stop recording:', error);
     }
   };
+
+  const saveRecording = async () => {
+
+  }
 
   return (
     <View>
       <Button
-        title={recording ? 'Stop Recording' : 'Start Recording'}
-        onPress={() => toggleRecording()}
+        title={recordingStatus ? 'Stop Recording' : 'Start Recording'}
+        onPress={() => recordingStatus ? stopRecording() : startRecording()}
       />
     </View>
   );
