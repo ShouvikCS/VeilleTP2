@@ -1,6 +1,6 @@
 import { Audio } from 'expo-av';
 
-class AudioPlayer {
+class AudioPlayerService {
   constructor() {
     this.soundObject = new Audio.Sound();
     this.isLoaded = false;
@@ -64,4 +64,4 @@ class AudioPlayer {
   }
 }
 
-export default AudioPlayer;
+export default AudioPlayerService;
