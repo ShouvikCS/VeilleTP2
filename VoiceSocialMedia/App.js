@@ -20,10 +20,13 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {recordings.length > 0 && recordings.map(recording => (
-        <AudioPlayer key={recording.id} source={recording.uri} />
-      ))}
       <AudioRecorder onNewRecording={updateRecordings} />
+      {recordings.map(recording => (
+        <View key={recording.id}>
+          <Text>{recording.user}</Text>
+          <AudioPlayer source={{ uri: recording.uri }} />
+        </View>
+      ))}
     </View>
   );
 }

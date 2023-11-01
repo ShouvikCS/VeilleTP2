@@ -1,30 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Button } from 'react-native';
 import { Audio } from 'expo-av';
 
 const AudioPlayer = ({ source }) => {
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+
+  async function loadAudio() {
+    const { sound } = await Audio.Sound.createAsync(source);
+    setSound(sound);
+  }
 
   useEffect(() => {
-    async function loadAudio() {
-      if (source) {
-        console.log('Loading audio from', source);
-        try {
-          const { sound } = await Audio.Sound.createAsync(
-            source,
-            { shouldPlay: false },
-            onPlaybackStatusUpdate
-          );
-          setSound(sound);
-          setIsLoaded(true);
-        } catch (error) {
-          console.error('Error loading audio:', error);
-        }
-      }
-    }
-
     loadAudio();
 
     return () => {
@@ -33,33 +20,27 @@ const AudioPlayer = ({ source }) => {
   }, [source]);
 
   const togglePlay = async () => {
-    if (isLoaded && sound) {
-      if (isPlaying) {
-        await sound.pauseAsync();
-      } else {
-        await sound.playAsync();
-      }
+    if (sound) {
+      isPlaying ? await sound.pauseAsync() : await sound.playAsync();
       setIsPlaying(!isPlaying);
     }
   };
 
-  const onPlaybackStatusUpdate = (status) => {
-    if (status.isLoaded && !status.isPlaying && status.durationMillis === status.positionMillis) {
-      if (sound) {
+  if (sound) {
+    sound.setOnPlaybackStatusUpdate((playbackStatus) => {
+      if (playbackStatus.didJustFinish) {
         sound.stopAsync();
-        sound.unloadAsync();
+        sound.setPositionAsync(0);
         setIsPlaying(false);
-        setIsLoaded(false);
       }
-    }
-  };
+    });
+  }
 
   return (
     <View>
       <Button
-        title={isLoaded ? (isPlaying ? 'Pause' : 'Play') : 'Locked'}
+        title={isPlaying ? 'Pause' : 'Play'}
         onPress={() => togglePlay()}
-        disabled={!isLoaded}
       />
     </View>
   );
