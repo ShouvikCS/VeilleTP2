@@ -63,19 +63,6 @@ class RecordingsDB {
       });
     });
   }
-
-  static updateRecording(id, newUri) {
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          'UPDATE recordings SET uri = ? WHERE id = ?;',
-          [newUri, id],
-          (_, { rowsAffected }) => resolve(rowsAffected > 0),
-          (_, error) => reject(error)
-        );
-      });
-    });
-  }
 }
 
 RecordingsDB.dropDatabase();

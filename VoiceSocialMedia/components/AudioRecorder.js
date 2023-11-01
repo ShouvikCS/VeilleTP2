@@ -65,7 +65,7 @@ const AudioRecorder = ({ onNewRecording }) => {
     try {
       await recordingObject.stopAndUnloadAsync();
       const uri = recordingObject.getURI();
-      await RecordingsDB.addRecording(uri, 'Me');
+      await saveRecording(uri);
       await setupRecorder();
       setRecordingStatus(false);
       onNewRecording();
@@ -87,7 +87,7 @@ const AudioRecorder = ({ onNewRecording }) => {
       to: newUri
     });
 
-    RecordingsDB.addRecording(newUri, 'Me');
+    await RecordingsDB.addRecording(newUri, 'Me');
   };
 
   return (
