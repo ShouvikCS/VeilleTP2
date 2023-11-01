@@ -50,8 +50,9 @@ const AudioPlayer = ({ source }) => {
   return (
     <View>
       <Button
-        title={isPlaying ? 'Pause' : 'Play'}
+        title={isLoaded ? (isPlaying ? 'Pause' : 'Play') : 'Locked'}
         onPress={() => togglePlay()}
+        disabled={!isLoaded}
       />
     </View>
   );
