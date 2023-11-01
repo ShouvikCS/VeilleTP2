@@ -81,7 +81,7 @@ const AudioRecorder = ({ onNewRecording }) => {
   };
 
   return (
-    <Button onPress={() => recordingStatus ? stopRecording() : startRecording()} size="lg" borderRadius={'xl'} width="90%" alignSelf="center" style={{ position: 'absolute', bottom: 20 }}>
+    <Button onPress={() => recordingStatus ? stopRecording() : startRecording()} size="lg" borderRadius={'xl'} width="90%" alignSelf="center" style={{ position: 'absolute', bottom: 20 }} colorScheme="blue" variant="solid">
       {recordingStatus ? <CustomIcon name="stop" /> : <CustomIcon name="microphone" />}
     </Button >
   );

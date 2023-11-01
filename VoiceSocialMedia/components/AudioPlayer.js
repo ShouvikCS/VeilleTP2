@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Audio } from 'expo-av';
-import { Box } from "native-base";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { Box, Text, Progress, HStack, Center } from "native-base";
 import CustomIcon from './CustomIcon';
 
 const AudioPlayer = ({ source }) => {
@@ -50,10 +49,21 @@ const AudioPlayer = ({ source }) => {
   return (
     <Box>
       <TouchableOpacity onPress={togglePlay}>
-        <Text>{isPlaying ? <CustomIcon name="pause" /> : <CustomIcon name="play" />}</Text>
+        <HStack>
+          <Center>
+            {isPlaying ? <CustomIcon name="pause" size={20} /> : <CustomIcon name="play" size={20} />}
+          </Center>
+          <Center w="70%">
+            <Box w="100%" maxW="400">
+              <Progress colorScheme="dark" value={position} max={duration} mx="4" />
+            </Box>
+          </Center>
+          <Center>
+            <Text color={'white'}>{isPlaying ? formatTime(position) : formatTime(duration)}</Text>
+          </Center>
+        </HStack>
       </TouchableOpacity>
-      {/* <Text>{isPlaying ? `${formatTime(position)} / ${formatTime(duration)}` : formatTime(duration)}</Text> */}
-    </Box>
+    </Box >
   );
 };
 

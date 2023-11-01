@@ -25,7 +25,7 @@ export default function App() {
 
   return (
     <NativeBaseProvider>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: '19%', marginHorizontal: 20 }}>
         <VoiceMessagesList recordings={recordings} />
       </ScrollView>
       <AudioRecorder onNewRecording={updateRecordings} />
