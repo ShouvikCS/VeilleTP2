@@ -4,7 +4,6 @@ import AudioPlayer from './components/AudioPlayer';
 import AudioRecorder from './components/AudioRecorder';
 import Recording from './models/recording';
 import RecordingsDB from './services/db';
-import RecordingsList from './components/RecordingsList';
 
 export default function App() {
   const [recordings, setRecordings] = useState([]);
@@ -21,9 +20,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <AudioPlayer source={require('./audios/startJingle.mp3')} />
+      {recordings.length > 0 && recordings.map(recording => (
+        <AudioPlayer key={recording.id} source={recording.uri} />
+      ))}
       <AudioRecorder onNewRecording={updateRecordings} />
-      <RecordingsList recordings={recordings} />
     </View>
   );
 }

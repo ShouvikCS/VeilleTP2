@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Button } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { Audio } from 'expo-av';
 
 const AudioPlayer = ({ source }) => {
@@ -9,13 +9,20 @@ const AudioPlayer = ({ source }) => {
 
   useEffect(() => {
     async function loadAudio() {
-      const { sound } = await Audio.Sound.createAsync(
-        source,
-        { shouldPlay: false },
-        onPlaybackStatusUpdate
-      );
-      setSound(sound);
-      setIsLoaded(true);
+      if (source) {
+        console.log('Loading audio from', source);
+        try {
+          const { sound } = await Audio.Sound.createAsync(
+            source,
+            { shouldPlay: false },
+            onPlaybackStatusUpdate
+          );
+          setSound(sound);
+          setIsLoaded(true);
+        } catch (error) {
+          console.error('Error loading audio:', error);
+        }
+      }
     }
 
     loadAudio();
@@ -26,7 +33,7 @@ const AudioPlayer = ({ source }) => {
   }, [source]);
 
   const togglePlay = async () => {
-    if (isLoaded) {
+    if (isLoaded && sound) {
       if (isPlaying) {
         await sound.pauseAsync();
       } else {

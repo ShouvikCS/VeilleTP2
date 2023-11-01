@@ -16,29 +16,35 @@ const AudioRecorder = ({ onNewRecording }) => {
     await stopJingle.loadAsync(require('../audios/stopJingle.mp3'));
   };
 
+  async function setupRecorder() {
+    const recording = new Audio.Recording();
+    try {
+      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      setRecordingObject(recording);
+      await loadJingles();
+    } catch (error) {
+      console.error('Failed to prepare audio recording:', error);
+    }
+  }
+
   useEffect(() => {
-    async function setupRecorder() {
+    async function requestPermissions() {
       const { status } = await Audio.getPermissionsAsync();
       if (status !== 'granted') {
         console.warn('Audio recording permissions are not granted');
         return;
       }
-
-      const recording = new Audio.Recording();
-      try {
-        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-        setRecordingObject(recording);
-        await loadJingles();
-      } catch (error) {
-        console.error('Failed to prepare audio recording:', error);
-      }
     }
 
+    requestPermissions();
     setupRecorder();
   }, []);
 
   const startRecording = async () => {
     try {
+      if (!recordingObject) {
+        await setupRecorder();
+      }
       if (recordingObject && recordingObject._canRecord) {
         if (!startJingle._loaded) {
           await loadJingles();
@@ -59,7 +65,8 @@ const AudioRecorder = ({ onNewRecording }) => {
     try {
       await recordingObject.stopAndUnloadAsync();
       const uri = recordingObject.getURI();
-      await saveRecording(uri);
+      await RecordingsDB.addRecording(uri, 'Me');
+      await setupRecorder();
       setRecordingStatus(false);
       onNewRecording();
       if (startJingle._loaded) {
