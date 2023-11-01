@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Audio } from 'expo-av';
-import { Button } from "native-base";
+import { Box, Button, HStack, VStack } from "native-base";
 import * as FileSystem from 'expo-file-system';
 import RecordingsDB from '../services/db';
 import CustomIcon from './CustomIcon';
+import AudioFeedback from './AudioFeedback';
 
 const AudioRecorder = ({ onNewRecording }) => {
   const [recordingStatus, setRecordingStatus] = useState(false);
@@ -81,9 +82,12 @@ const AudioRecorder = ({ onNewRecording }) => {
   };
 
   return (
-    <Button onPress={() => recordingStatus ? stopRecording() : startRecording()} size="lg" borderRadius={'xl'} width="90%" alignSelf="center" style={{ position: 'absolute', bottom: 20 }} colorScheme="blue" variant="solid">
-      {recordingStatus ? <CustomIcon name="stop" /> : <CustomIcon name="microphone" />}
-    </Button >
+    <Box width="100%" justifyContent="center" alignItems="center" position="absolute" bottom={0} p={5}>
+      {recordingStatus && <AudioFeedback isRecording={recordingStatus} />}
+      <Button onPress={() => recordingStatus ? stopRecording() : startRecording()} size="lg" borderRadius={'xl'} width="90%" colorScheme="blue" variant="solid">
+        {recordingStatus ? <CustomIcon name="stop" /> : <CustomIcon name="microphone" />}
+      </Button >
+    </Box>
   );
 };
 
