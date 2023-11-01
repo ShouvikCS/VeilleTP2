@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Button } from 'react-native';
 import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 import RecordingsDB from '../services/db';
 
-const AudioRecorder = () => {
+const AudioRecorder = ({ onNewRecording }) => {
   const [recordingStatus, setRecordingStatus] = useState(false);
   const [recordingObject, setRecordingObject] = useState(null);
 
@@ -38,7 +39,7 @@ const AudioRecorder = () => {
 
   const startRecording = async () => {
     try {
-      if (recordingObject) {
+      if (recordingObject && recordingObject._canRecord) {
         if (!startJingle._loaded) {
           await loadJingles();
         }
@@ -58,16 +59,28 @@ const AudioRecorder = () => {
     try {
       await recordingObject.stopAndUnloadAsync();
       const uri = recordingObject.getURI();
-      RecordingsDB.addRecording(uri);
-      console.log(RecordingsDB.getRecordings());
-
+      await saveRecording(uri);
       setRecordingStatus(false);
+      onNewRecording();
       if (startJingle._loaded) {
         await stopJingle.replayAsync();
       }
     } catch (error) {
       console.error('Failed to stop recording:', error);
     }
+  };
+
+  const saveRecording = async (uri) => {
+    const fileExtension = uri.split('.').pop();
+    const timestamp = new Date().getTime();
+    const newUri = `${FileSystem.documentDirectory}recording_${timestamp}.${fileExtension}`;
+
+    await FileSystem.copyAsync({
+      from: uri,
+      to: newUri
+    });
+
+    RecordingsDB.addRecording(newUri, 'Me');
   };
 
   return (
