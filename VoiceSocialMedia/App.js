@@ -3,6 +3,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import RecordingsDB from './services/db';
 import Friend from './models/friend';
 import AudioPlayer from './components/AudioPlayer';
+import AudioRecorder from './components/AudioRecorder';
 
 export default function App() {
 
@@ -19,6 +20,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <AudioPlayer source={require('./audios/startJingle.mp3')} />
+      <AudioRecorder />
     </View>
   );
 }
