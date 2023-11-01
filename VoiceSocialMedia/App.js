@@ -23,8 +23,7 @@ export default function App() {
       <AudioRecorder onNewRecording={updateRecordings} />
       {recordings.map(recording => (
         <View key={recording.id}>
-          <Text>{recording.user}</Text>
-          <AudioPlayer source={{ uri: recording.uri }} />
+          <AudioPlayer source={{ uri: recording.uri, user: recording.user }} />
         </View>
       ))}
     </View>

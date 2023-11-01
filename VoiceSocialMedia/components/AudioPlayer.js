@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button } from 'react-native';
+import { View, Text, Button, TouchableOpacity } from 'react-native';
 import { Audio } from 'expo-av';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const AudioPlayer = ({ source }) => {
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  async function loadAudio() {
-    const { sound } = await Audio.Sound.createAsync(source);
-    setSound(sound);
-  }
-
   useEffect(() => {
-    loadAudio();
+    async function loadAudio() {
+      const { sound } = await Audio.Sound.createAsync(source);
+      setSound(sound);
+    }
 
+    loadAudio();
     return () => {
       if (sound) sound.unloadAsync();
     };
@@ -38,10 +38,10 @@ const AudioPlayer = ({ source }) => {
 
   return (
     <View>
-      <Button
-        title={isPlaying ? 'Pause' : 'Play'}
-        onPress={() => togglePlay()}
-      />
+      <Text>{source.user}</Text>
+      <TouchableOpacity onPress={togglePlay}>
+        <Text>{isPlaying ? <Icon name="pause" size={30} /> : <Icon name="play" size={30} />}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
