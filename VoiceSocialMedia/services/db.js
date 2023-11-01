@@ -42,7 +42,7 @@ class RecordingsDB {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          'SELECT * FROM recordings ORDER BY id DESC;',
+          'SELECT * FROM recordings ORDER BY id ASC;',
           [],
           (_, { rows }) => resolve(rows._array),
           (_, error) => reject(error)
@@ -65,7 +65,7 @@ class RecordingsDB {
   }
 }
 
-// RecordingsDB.dropDatabase();
+RecordingsDB.dropDatabase();
 RecordingsDB.initDatabase();
 
 export default RecordingsDB;

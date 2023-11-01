@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import { Audio } from 'expo-av';
+import { Box } from "native-base";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import CustomIcon from './CustomIcon';
 
 const AudioPlayer = ({ source }) => {
   const [sound, setSound] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackStatus, setPlaybackStatus] = useState(null);
 
   useEffect(() => {
     async function loadAudio() {
@@ -22,27 +24,36 @@ const AudioPlayer = ({ source }) => {
   const togglePlay = async () => {
     if (sound) {
       isPlaying ? await sound.pauseAsync() : await sound.playAsync();
-      setIsPlaying(!isPlaying);
     }
   };
 
   if (sound) {
     sound.setOnPlaybackStatusUpdate((playbackStatus) => {
+      setPlaybackStatus(playbackStatus);
       if (playbackStatus.didJustFinish) {
         sound.stopAsync();
         sound.setPositionAsync(0);
-        setIsPlaying(false);
       }
     });
   }
 
+  const isPlaying = playbackStatus && playbackStatus.isPlaying;
+  const duration = playbackStatus && playbackStatus.durationMillis;
+  const position = playbackStatus && playbackStatus.positionMillis;
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60000);
+    const seconds = ((time % 60000) / 1000).toFixed(0);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
   return (
-    <View>
-      <Text>{source.user}</Text>
+    <Box>
       <TouchableOpacity onPress={togglePlay}>
-        <Text>{isPlaying ? <Icon name="pause" size={30} /> : <Icon name="play" size={30} />}</Text>
+        <Text>{isPlaying ? <CustomIcon name="pause" /> : <CustomIcon name="play" />}</Text>
       </TouchableOpacity>
-    </View>
+      {/* <Text>{isPlaying ? `${formatTime(position)} / ${formatTime(duration)}` : formatTime(duration)}</Text> */}
+    </Box>
   );
 };
 

@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import AudioPlayer from './components/AudioPlayer';
-import AudioRecorder from './components/AudioRecorder';
+import { LogBox } from 'react-native';
+import { NativeBaseProvider, ScrollView } from 'native-base';
 import Recording from './models/recording';
 import RecordingsDB from './services/db';
+import AudioRecorder from './components/AudioRecorder';
+import VoiceMessagesList from './components/VoiceMessagesList';
 
 export default function App() {
   const [recordings, setRecordings] = useState([]);
@@ -15,26 +16,19 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    LogBox.ignoreLogs([
+      'In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.',
+    ]);
+
     updateRecordings();
   }, [updateRecordings]);
 
   return (
-    <View style={styles.container}>
+    <NativeBaseProvider>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <VoiceMessagesList recordings={recordings} />
+      </ScrollView>
       <AudioRecorder onNewRecording={updateRecordings} />
-      {recordings.map(recording => (
-        <View key={recording.id}>
-          <AudioPlayer source={{ uri: recording.uri, user: recording.user }} />
-        </View>
-      ))}
-    </View>
+    </NativeBaseProvider >
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
