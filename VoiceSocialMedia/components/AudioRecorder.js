@@ -38,12 +38,16 @@ const AudioRecorder = () => {
 
   const startRecording = async () => {
     try {
-      if (!startJingle._loaded) {
-        await loadJingles();
+      if (recordingObject) {
+        if (!startJingle._loaded) {
+          await loadJingles();
+        }
+        await startJingle.replayAsync();
+        await recordingObject.startAsync();
+        setRecordingStatus(true);
+      } else {
+        console.error('Recording object is not ready.');
       }
-      await startJingle.replayAsync();
-      await recordingObject.startAsync();
-      setRecordingStatus(true);
     } catch (error) {
       console.error('Failed to start recording:', error);
       setRecordingStatus(false);
@@ -54,6 +58,8 @@ const AudioRecorder = () => {
     try {
       await recordingObject.stopAndUnloadAsync();
       const uri = recordingObject.getURI();
+      RecordingsDB.addRecording(uri);
+      console.log(RecordingsDB.getRecordings());
 
       setRecordingStatus(false);
       if (startJingle._loaded) {
@@ -63,10 +69,6 @@ const AudioRecorder = () => {
       console.error('Failed to stop recording:', error);
     }
   };
-
-  const saveRecording = async () => {
-
-  }
 
   return (
     <View>
