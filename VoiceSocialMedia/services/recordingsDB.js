@@ -72,7 +72,7 @@ class RecordingsDB {
   }
 }
 
-RecordingsDB.dropDatabase();
+// RecordingsDB.dropDatabase();
 RecordingsDB.initDatabase();
 
 export default RecordingsDB;

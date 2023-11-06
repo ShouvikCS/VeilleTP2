@@ -59,10 +59,6 @@ class UsersDB {
     });
   }
 
-  static getCurrentUser() {
-    this.getUser(1);
-  }
-
   static getAllUsers() {
     return new Promise((resolve, reject) => {
       usersDB.transaction((tx) => {
@@ -79,12 +75,28 @@ class UsersDB {
     });
   }
 
-  static getUser(id) {
+  static getUserById(id) {
     return new Promise((resolve, reject) => {
       usersDB.transaction((tx) => {
         tx.executeSql(
           'SELECT * FROM users WHERE id = ?;',
           [id],
+          (_, { rows }) => {
+            const user = new User(rows._array[0].id, rows._array[0].name);
+            resolve(user);
+          },
+          (_, error) => reject(error)
+        );
+      });
+    });
+  }
+
+  static getUserByName(name) {
+    return new Promise((resolve, reject) => {
+      usersDB.transaction((tx) => {
+        tx.executeSql(
+          'SELECT * FROM users WHERE name = ?;',
+          [name],
           (_, { rows }) => {
             const user = new User(rows._array[0].id, rows._array[0].name);
             resolve(user);
@@ -133,9 +145,25 @@ class UsersDB {
       });
     });
   }
+
+  static getFollowingById(userId) {
+    return new Promise((resolve, reject) => {
+      usersDB.transaction((tx) => {
+        tx.executeSql(
+          'SELECT * FROM users WHERE id IN (SELECT followingId FROM followers WHERE followerId = ?);',
+          [userId],
+          (_, { rows }) => {
+            const users = rows._array.map((row) => new User(row.id, row.name));
+            resolve(users);
+          },
+          (_, error) => reject(error)
+        );
+      });
+    });
+  }
 }
 
-UsersDB.dropDatabases();
+// UsersDB.dropDatabases();
 UsersDB.initDatabases();
 
 UsersDB.addUser('Me');

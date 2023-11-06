@@ -47,23 +47,21 @@ const AudioPlayer = ({ source }) => {
   };
 
   return (
-    <Box>
-      <TouchableOpacity onPress={togglePlay}>
-        <HStack>
-          <Center>
-            {isPlaying ? <CustomIcon name="pause" size={20} /> : <CustomIcon name="play" size={20} />}
-          </Center>
-          <Center w="70%">
-            <Box w="100%" maxW="400">
-              <Progress colorScheme="dark" value={position} max={duration} mx="4" />
-            </Box>
-          </Center>
-          <Center>
-            <Text color={'white'}>{isPlaying ? formatTime(position) : formatTime(duration)}</Text>
-          </Center>
-        </HStack>
-      </TouchableOpacity>
-    </Box >
+    <TouchableOpacity onPress={togglePlay}>
+      <HStack>
+        <Center>
+          {isPlaying ? <CustomIcon name="pause" size={20} /> : <CustomIcon name="play" size={20} />}
+        </Center>
+        <Center w="70%">
+          <Box w="100%" maxW="400">
+            <Progress colorScheme="dark" value={position} max={duration} mx="4" />
+          </Box>
+        </Center>
+        <Center>
+          <Text color={'white'}>{isPlaying ? formatTime(position) : formatTime(duration)}</Text>
+        </Center>
+      </HStack>
+    </TouchableOpacity>
   );
 };
 
