@@ -24,10 +24,10 @@ const AudioRecorder = ({ onNewRecording }) => {
 
   useEffect(() => {
     async function requestPermissions() {
+      await Audio.requestPermissionsAsync();
       const { status } = await Audio.getPermissionsAsync();
       if (status !== 'granted') {
-        console.warn('Audio recording permissions are not granted');
-        return;
+        console.error('Audio permissions not granted!');
       }
     }
 
